@@ -2,8 +2,8 @@
 
 one:
   title: MyString
-  status: :available
+  status: available
 
 two:
   title: MyString
-  status: :available
+  status: available
