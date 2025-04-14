@@ -3,6 +3,7 @@ require "test_helper"
 class BooksControllerTest < ActionDispatch::IntegrationTest
   setup do
     @book = books(:one)
+    @user = users(:one)
   end
 
   test "should get index" do
@@ -36,5 +37,25 @@ class BooksControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :no_content
+  end
+
+  test "should create a reservation" do
+    assert_difference("Reservation.count") do
+      post book_reserve_url(@book), params: { book: { user_id: @user.id } }, as: :json
+    end
+
+    assert_response :created
+    @book.reload
+    assert_equal "reserved", @book.status
+  end
+
+  test "should not allow if the book is already reserved" do
+    @book.reserved!
+    assert_no_difference("Reservation.count") do
+      post book_reserve_url(@book), params: { book: { user_id: @user.id } }
+    end
+
+    assert_response :unprocessable_entity
+    assert_includes @response.body, "Book is already reserved"
   end
 end

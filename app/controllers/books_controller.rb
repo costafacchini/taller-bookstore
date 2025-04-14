@@ -38,6 +38,24 @@ class BooksController < ApplicationController
     @book.destroy!
   end
 
+  def reserve
+    book = Book.find(params[:book_id])
+
+    if book.reserved?
+      render json: { error: "Book is already reserved" }, status: :unprocessable_entity
+      return
+    end
+
+    reservation = book.reservations.new(user_id: book_params[:user_id], borrowed_at: Time.current)
+
+    if reservation.save
+      book.update(status: :reserved)
+      render json: reservation, status: :created
+    else
+      render json: reservation.errors, status: :unprocessable_entity
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_book
@@ -46,6 +64,6 @@ class BooksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def book_params
-      params.expect(book: [ :title, :status ])
+      params.expect(book: [ :title, :status, :user_id ])
     end
 end
