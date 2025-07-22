@@ -47,6 +47,6 @@ group :development, :test do
 end
 
 group :test do
-  gem "shoulda-matchers", "~> 6.0"
+  gem "shoulda-matchers", "~> 6.5"
   gem "shoulda-context", "~> 3.0.0.rc1"
 end
